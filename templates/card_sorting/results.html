@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load card_sorting_tags %}
+{% block title %}Resultados{% endblock %}
+
+{% block extra_style %}
+.stat-badge {
+  display: inline-block;
+  background: var(--brand-light);
+  color: var(--brand);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 2px;
+}
+.cat-bar { height: 8px; border-radius: 4px; background: var(--brand-light); }
+.cat-fill { height: 100%; border-radius: 4px; background: var(--brand); }
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h3 fw-bold mb-1">Resultados del Card Sorting</h1>
+    <p class="text-muted mb-0">{{ session_count }} sesiones completadas</p>
+  </div>
+  <a href="/admin/card_sorting/" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-gear me-1"></i>Admin
+  </a>
+</div>
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card border-0 bg-white shadow-sm text-center p-3">
+      <div class="h2 fw-bold text-primary mb-0">{{ session_count }}</div>
+      <div class="text-muted small">Participantes</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 bg-white shadow-sm text-center p-3">
+      <div class="h2 fw-bold text-primary mb-0">{{ cards|length }}</div>
+      <div class="text-muted small">Tarjetas</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 bg-white shadow-sm text-center p-3">
+      <div class="h2 fw-bold text-primary mb-0">
+        {% if session_count > 0 %}
+          {{ card_stats|length }}
+        {% else %}—{% endif %}
+      </div>
+      <div class="text-muted small">Ítems analizados</div>
+    </div>
+  </div>
+</div>
+
+{% if session_count == 0 %}
+  <div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    Aún no hay sesiones completadas. Comparte el enlace de inicio con los participantes.
+  </div>
+{% else %}
+
+<!-- Per-card breakdown -->
+<h5 class="fw-bold mb-3">Agrupaciones por ítem</h5>
+<div class="row g-3">
+  {% for card in cards %}
+    {% with stat=card_stats|get_item:card.id %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 bg-white shadow-sm h-100">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between mb-2">
+            <strong class="small">{{ card.title }}</strong>
+            <span class="text-muted small">{{ stat.total_sorted }}/{{ session_count }}</span>
+          </div>
+          {% if stat.category_counts %}
+            {% for cat_name, count in stat.category_counts.items %}
+              <div class="mb-1">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="small text-truncate me-2" style="max-width:70%">{{ cat_name }}</span>
+                  <span class="small text-muted">{{ count }}x</span>
+                </div>
+                <div class="cat-bar mt-1">
+                  <div class="cat-fill" style="width:{% widthratio count session_count 100 %}%"></div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted small mb-0">Sin datos aún</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+  {% endfor %}
+</div>
+
+<!-- Session list -->
+<h5 class="fw-bold mt-5 mb-3">Sesiones completadas</h5>
+<div class="table-responsive">
+  <table class="table table-hover bg-white rounded shadow-sm">
+    <thead class="table-light">
+      <tr>
+        <th>Participante</th>
+        <th>Rol</th>
+        <th>Categorías</th>
+        <th>Tarjetas</th>
+        <th>Duración</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in sessions %}
+        <tr>
+          <td>
+            {{ s.participant_name }}
+            {% if s.participant_email %}
+              <br><small class="text-muted">{{ s.participant_email }}</small>
+            {% endif %}
+          </td>
+          <td class="text-muted small">{{ s.participant_role|default:"—" }}</td>
+          <td>{{ s.categories.count }}</td>
+          <td>{{ s.cards_sorted }} / {{ s.total_cards }}</td>
+          <td>{% if s.duration_minutes %}{{ s.duration_minutes }} min{% else %}—{% endif %}</td>
+          <td class="text-muted small">{{ s.completed_at|date:"d/m/Y H:i" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endif %}
+{% endblock %}
