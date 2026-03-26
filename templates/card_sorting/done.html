@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}¡Gracias!{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 text-center">
+    <div class="display-1 mb-3">🎉</div>
+    <h1 class="h2 fw-bold mb-2">¡Muchas gracias, {{ session.participant_name }}!</h1>
+    <p class="text-muted lead mb-4">
+      Tus respuestas han sido registradas correctamente.<br>
+      Nos ayudarás a mejorar la organización del menú de nuestra aplicación.
+    </p>
+
+    {% if session.duration_minutes %}
+      <div class="card border-0 bg-white shadow-sm d-inline-block px-4 py-3 mb-4">
+        <div class="row g-4 text-center">
+          <div class="col">
+            <div class="h4 fw-bold text-primary mb-0">{{ session.duration_minutes }} min</div>
+            <div class="text-muted small">Tiempo empleado</div>
+          </div>
+          <div class="col">
+            <div class="h4 fw-bold text-primary mb-0">{{ session.categories.count }}</div>
+            <div class="text-muted small">Categorías creadas</div>
+          </div>
+          <div class="col">
+            <div class="h4 fw-bold text-primary mb-0">{{ session.cards_sorted }}</div>
+            <div class="text-muted small">Tarjetas ordenadas</div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <p class="text-muted small">Puedes cerrar esta ventana.</p>
+  </div>
+</div>
+{% endblock %}

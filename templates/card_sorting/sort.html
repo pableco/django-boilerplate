@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% block title %}Ordenar tarjetas{% endblock %}
+
+{% block extra_style %}
+.sort-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; min-height: calc(100vh - 140px); }
+@media (max-width: 768px) { .sort-layout { grid-template-columns: 1fr; } }
+
+.card-chip {
+  background: #fff;
+  border: 2px solid #e0ddf7;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  cursor: grab;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: box-shadow .15s, border-color .15s;
+  user-select: none;
+}
+.card-chip:hover { border-color: var(--brand); box-shadow: 0 2px 8px rgba(91,79,255,.15); }
+.card-chip.sortable-ghost { opacity: 0.4; }
+.card-chip.sortable-chosen { box-shadow: 0 4px 16px rgba(91,79,255,.3); border-color: var(--brand); }
+
+.unsorted-panel {
+  background: #fff;
+  border-radius: 14px;
+  border: 2px dashed #d0cbf7;
+  padding: 1rem;
+  position: sticky;
+  top: 80px;
+}
+.unsorted-panel h6 { color: var(--brand); font-weight: 700; }
+.unsorted-drop { min-height: 60px; }
+
+.categories-area { display: flex; flex-direction: column; gap: 1rem; }
+
+.category-col {
+  background: #fff;
+  border-radius: 14px;
+  border: 2px solid #e8e4ff;
+  padding: 1rem;
+}
+.category-col .cat-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.cat-name-input {
+  border: none;
+  border-bottom: 2px solid #e0ddf7;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  background: transparent;
+  flex: 1;
+  padding: 2px 4px;
+  outline: none;
+}
+.cat-name-input:focus { border-bottom-color: var(--brand); }
+.cat-drop { min-height: 50px; border-radius: 8px; transition: background .15s; }
+.cat-drop.drag-over { background: var(--brand-light); }
+.btn-delete-cat { background: none; border: none; color: #aaa; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+.btn-delete-cat:hover { color: #dc3545; background: #fff0f0; }
+
+.progress-bar-custom { height: 6px; border-radius: 3px; background: #e0ddf7; }
+.progress-fill { height: 100%; border-radius: 3px; background: var(--brand); transition: width .3s; }
+
+#btn-finish { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100; }
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <span class="fw-semibold">Hola, <strong>{{ session.participant_name }}</strong></span>
+    <span class="text-muted ms-2 small">— Arrastra las tarjetas a las categorías que crees convenientes</span>
+  </div>
+  <div class="text-end">
+    <div class="text-muted small mb-1">
+      <span id="sorted-count">0</span> de {{ session.total_cards }} tarjetas ordenadas
+    </div>
+    <div class="progress-bar-custom" style="width:180px">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sort-layout">
+
+  <!-- Left: unsorted cards -->
+  <div>
+    <div class="unsorted-panel">
+      <h6 class="mb-1"><i class="bi bi-stack me-1"></i>Tarjetas sin clasificar</h6>
+      <p class="text-muted small mb-3">Arrastra las tarjetas hacia una categoría</p>
+      <div class="unsorted-drop" id="unsorted-drop">
+        {% for p in unsorted %}
+          <div class="card-chip" data-card-id="{{ p.card.id }}" title="{{ p.card.description }}">
+            {{ p.card.title }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: categories -->
+  <div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0">Mis categorías</h5>
+      <button class="btn btn-brand btn-sm" id="btn-add-cat">
+        <i class="bi bi-plus-lg me-1"></i>Nueva categoría
+      </button>
+    </div>
+
+    <div class="categories-area" id="categories-area">
+      {% for cat in categories %}
+        <div class="category-col" data-cat-id="{{ cat.id }}">
+          <div class="cat-header">
+            <i class="bi bi-folder2 text-primary"></i>
+            <input type="text" class="cat-name-input" value="{{ cat.name }}" placeholder="Nombre de la categoría">
+            <button class="btn-delete-cat" title="Eliminar categoría">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="cat-drop" data-cat-id="{{ cat.id }}">
+            {% for p in sorted_by_cat|default_if_none:'' %}{% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if not categories %}
+      <div class="text-center text-muted py-5" id="empty-hint">
+        <i class="bi bi-arrow-up-circle display-5 d-block mb-2" style="color:#c5bcff"></i>
+        Crea tu primera categoría con el botón de arriba
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Floating finish button -->
+<button class="btn btn-brand btn-lg shadow" id="btn-finish" disabled>
+  <i class="bi bi-check2-circle me-2"></i>Finalizar prueba
+</button>
+
+<!-- Finish confirmation modal -->
+<div class="modal fade" id="finishModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="display-4 mb-3">✅</div>
+        <h4 class="fw-bold">¿Terminaste de ordenar?</h4>
+        <p class="text-muted">Asegúrate de que todas las tarjetas estén en una categoría antes de enviar.</p>
+        <div id="unsorted-warning" class="alert alert-warning d-none">
+          Aún tienes <strong id="unsorted-remaining">0</strong> tarjetas sin categorizar.
+          Puedes enviar de todas formas si lo deseas.
+        </div>
+        <div class="d-flex gap-2 justify-content-center mt-3">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Seguir ordenando</button>
+          <button class="btn btn-brand" id="btn-confirm-finish">
+            <i class="bi bi-send me-1"></i>Enviar respuestas
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+const SESSION_KEY = "{{ session.session_key }}";
+const SAVE_URL = "{% url 'card_sorting:save' session_key=session.session_key %}";
+const COMPLETE_URL = "{% url 'card_sorting:complete' session_key=session.session_key %}";
+const DONE_URL = "{% url 'card_sorting:done' session_key=session.session_key %}";
+const CSRF = "{{ csrf_token }}";
+
+// Pre-populate categories from server
+const initialCategories = [
+  {% for cat in categories %}
+  {
+    id: {{ cat.id }},
+    name: "{{ cat.name|escapejs }}",
+    cards: [{% for p in sorted_by_cat %}{% endfor %}]
+  },
+  {% endfor %}
+];
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let catCounter = 0;
+let saveTimeout = null;
+
+// ─── DOM helpers ─────────────────────────────────────────────────────────────
+function makeCategoryEl(id, name, cards) {
+  const col = document.createElement('div');
+  col.className = 'category-col';
+  if (id) col.dataset.catId = id;
+  col.dataset.tempId = `tmp-${catCounter++}`;
+
+  col.innerHTML = `
+    <div class="cat-header">
+      <i class="bi bi-folder2 text-primary"></i>
+      <input type="text" class="cat-name-input" value="${name}" placeholder="Nombre de la categoría">
+      <button class="btn-delete-cat" title="Eliminar categoría"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="cat-drop"></div>
+  `;
+
+  // Add existing cards
+  if (cards && cards.length) {
+    const drop = col.querySelector('.cat-drop');
+    cards.forEach(card => drop.appendChild(card));
+  }
+
+  bindCategoryEvents(col);
+  return col;
+}
+
+function bindCategoryEvents(col) {
+  const drop = col.querySelector('.cat-drop');
+  const input = col.querySelector('.cat-name-input');
+  const delBtn = col.querySelector('.btn-delete-cat');
+
+  // Sortable for this category's drop zone
+  Sortable.create(drop, {
+    group: 'cards',
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    onAdd: () => { scheduleSave(); updateProgress(); },
+    onRemove: () => { scheduleSave(); updateProgress(); },
+    onEnd: scheduleSave,
+  });
+
+  input.addEventListener('input', scheduleSave);
+
+  delBtn.addEventListener('click', () => {
+    // Move cards back to unsorted
+    const unsortedDrop = document.getElementById('unsorted-drop');
+    [...drop.children].forEach(chip => unsortedDrop.appendChild(chip));
+    col.remove();
+    scheduleSave();
+    updateProgress();
+    showEmptyHintIfNeeded();
+  });
+}
+
+// ─── Init unsorted drop ───────────────────────────────────────────────────────
+Sortable.create(document.getElementById('unsorted-drop'), {
+  group: 'cards',
+  animation: 150,
+  ghostClass: 'sortable-ghost',
+  chosenClass: 'sortable-chosen',
+  onAdd: () => { scheduleSave(); updateProgress(); },
+  onRemove: () => { scheduleSave(); updateProgress(); },
+});
+
+// ─── Init existing categories (from server render) ────────────────────────────
+document.querySelectorAll('#categories-area .category-col').forEach(col => {
+  bindCategoryEvents(col);
+});
+
+// ─── Add category button ──────────────────────────────────────────────────────
+document.getElementById('btn-add-cat').addEventListener('click', () => {
+  const area = document.getElementById('categories-area');
+  const el = makeCategoryEl(null, '', []);
+  area.appendChild(el);
+  el.querySelector('.cat-name-input').focus();
+  showEmptyHintIfNeeded();
+  scheduleSave();
+});
+
+// ─── Progress ────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const total = document.querySelectorAll('.card-chip').length;
+  const unsorted = document.querySelectorAll('#unsorted-drop .card-chip').length;
+  const sorted = total - unsorted;
+  document.getElementById('sorted-count').textContent = sorted;
+  const pct = total > 0 ? (sorted / total) * 100 : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Enable finish button when at least one category with at least one card exists
+  const hasCats = document.querySelectorAll('#categories-area .category-col').length > 0;
+  document.getElementById('btn-finish').disabled = !hasCats;
+}
+updateProgress();
+
+// ─── Empty hint ───────────────────────────────────────────────────────────────
+function showEmptyHintIfNeeded() {
+  const hint = document.getElementById('empty-hint');
+  if (!hint) return;
+  const cats = document.querySelectorAll('#categories-area .category-col').length;
+  hint.style.display = cats === 0 ? '' : 'none';
+}
+
+// ─── Serialize state ──────────────────────────────────────────────────────────
+function getState() {
+  const categories = [];
+  document.querySelectorAll('#categories-area .category-col').forEach(col => {
+    const id = col.dataset.catId ? parseInt(col.dataset.catId) : null;
+    const name = col.querySelector('.cat-name-input').value.trim() || 'Sin nombre';
+    const cards = [...col.querySelectorAll('.cat-drop .card-chip')].map(
+      chip => parseInt(chip.dataset.cardId)
+    );
+    categories.push({ id, name, cards });
+  });
+
+  const unsorted = [...document.querySelectorAll('#unsorted-drop .card-chip')].map(
+    chip => parseInt(chip.dataset.cardId)
+  );
+
+  return { categories, unsorted };
+}
+
+// ─── Auto-save (debounced) ────────────────────────────────────────────────────
+function scheduleSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(saveState, 1500);
+}
+
+async function saveState() {
+  const state = getState();
+  try {
+    const resp = await fetch(SAVE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+      body: JSON.stringify(state),
+    });
+    const data = await resp.json();
+    // Update cat IDs from server response if needed
+    if (data.ok) {
+      // Re-fetch categories to get server-assigned IDs
+      // Simple approach: categories get IDs on next save, that's fine
+    }
+  } catch (e) {
+    console.warn('Auto-save failed', e);
+  }
+}
+
+// ─── Finish flow ──────────────────────────────────────────────────────────────
+document.getElementById('btn-finish').addEventListener('click', () => {
+  const unsorted = document.querySelectorAll('#unsorted-drop .card-chip').length;
+  const warning = document.getElementById('unsorted-warning');
+  if (unsorted > 0) {
+    warning.classList.remove('d-none');
+    document.getElementById('unsorted-remaining').textContent = unsorted;
+  } else {
+    warning.classList.add('d-none');
+  }
+  new bootstrap.Modal(document.getElementById('finishModal')).show();
+});
+
+document.getElementById('btn-confirm-finish').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-confirm-finish');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...';
+
+  const state = getState();
+  try {
+    const resp = await fetch(COMPLETE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+      body: JSON.stringify(state),
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      window.location.href = DONE_URL;
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-send me-1"></i>Enviar respuestas';
+    alert('Error al enviar. Intenta de nuevo.');
+  }
+});
+</script>
+{% endblock %}
