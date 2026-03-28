@@ -19,6 +19,10 @@ _railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
 if _railway_domain and _railway_domain not in _allowed:
     _allowed = _allowed + [_railway_domain]
 
+# Railway healthcheck uses this host — always allow it
+if 'healthcheck.railway.app' not in _allowed:
+    _allowed = _allowed + ['healthcheck.railway.app']
+
 ALLOWED_HOSTS = _allowed
 
 # Django 4.x requires CSRF_TRUSTED_ORIGINS for HTTPS requests.
