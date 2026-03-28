@@ -12,14 +12,22 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-poew5jgh(hshk7ws!q6lv
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
+_allowed = config('ALLOWED_HOSTS', default='*', cast=Csv())
+
+# Railway injects RAILWAY_PUBLIC_DOMAIN automatically — add it to ALLOWED_HOSTS
+_railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
+if _railway_domain and _railway_domain not in _allowed:
+    _allowed = _allowed + [_railway_domain]
+
+ALLOWED_HOSTS = _allowed
 
 # Django 4.x requires CSRF_TRUSTED_ORIGINS for HTTPS requests.
-# Auto-built from ALLOWED_HOSTS so no extra env var is needed in most cases.
-# Override with CSRF_TRUSTED_ORIGINS=https://a.com,https://b.com if needed.
+# Prefer an explicit env var; otherwise auto-build from Railway domain or ALLOWED_HOSTS.
 _csrf_raw = config('CSRF_TRUSTED_ORIGINS', default='')
 if _csrf_raw:
     CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_raw.split(',') if o.strip()]
+elif _railway_domain:
+    CSRF_TRUSTED_ORIGINS = [f'https://{_railway_domain}']
 else:
     CSRF_TRUSTED_ORIGINS = [
         f'https://{h}' for h in ALLOWED_HOSTS if h not in ('*', 'localhost', '127.0.0.1')
