@@ -14,10 +14,19 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
-# Required in Django 4.x for CSRF when using HTTPS.
-# Set CSRF_TRUSTED_ORIGINS to your Railway domain, e.g.:
-#   https://web-production-xxxx.up.railway.app
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+# Django 4.x requires CSRF_TRUSTED_ORIGINS for HTTPS requests.
+# Auto-built from ALLOWED_HOSTS so no extra env var is needed in most cases.
+# Override with CSRF_TRUSTED_ORIGINS=https://a.com,https://b.com if needed.
+_csrf_raw = config('CSRF_TRUSTED_ORIGINS', default='')
+if _csrf_raw:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_raw.split(',') if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = [
+        f'https://{h}' for h in ALLOWED_HOSTS if h not in ('*', 'localhost', '127.0.0.1')
+    ]
+
+# Trust Railway's (and most PaaS) HTTPS reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
