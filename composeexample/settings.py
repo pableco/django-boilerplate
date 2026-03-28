@@ -14,6 +14,11 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
+# Required in Django 4.x for CSRF when using HTTPS.
+# Set CSRF_TRUSTED_ORIGINS to your Railway domain, e.g.:
+#   https://web-production-xxxx.up.railway.app
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
