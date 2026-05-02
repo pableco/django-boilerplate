@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "gunicorn composeexample.wsgi --log-file -"
+startCommand = "python manage.py collectstatic --noinput && gunicorn composeexample.wsgi --bind 0.0.0.0:$PORT --log-file -"
 healthcheckPath = "/inicio/"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
