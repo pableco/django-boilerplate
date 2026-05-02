@@ -2,138 +2,147 @@
 {% block title %}Inicio{% endblock %}
 
 {% block extra_style %}
-.start-wrap {
-  max-width: 520px;
-  margin: 48px auto 0;
-}
-.start-hero {
-  text-align: center;
-  margin-bottom: 32px;
-}
-.start-icon {
-  width: 72px;
-  height: 72px;
-  background: var(--primary-light);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-}
-.start-icon svg { width: 36px; height: 36px; color: var(--primary); }
-.start-hero h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px; color: var(--text-primary); }
-.start-hero p  { color: var(--text-secondary); margin: 0; line-height: 1.7; }
+.start-wrap { max-width: 480px; margin: 56px auto 0; }
 
-.ant-card { border-radius: var(--radius) !important; }
-.field-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; color: var(--text-primary); }
-.field-optional { font-weight: 400; color: var(--text-secondary); margin-left: 4px; }
-.field-required { color: #ff4d4f; margin-left: 2px; }
-.field-group { margin-bottom: 20px; }
+.start-hero { margin-bottom: 32px; }
+.start-hero h1 { font-size: 26px; margin-bottom: 10px; }
+.start-hero p  { color: var(--text-secondary); font-size: 15px; line-height: 1.7; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+
+.field { margin-bottom: 20px; }
+.field:last-of-type { margin-bottom: 28px; }
+.field label {
+  display: block;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+.field label .opt { font-weight: 400; color: var(--text-secondary); }
+.field label .req { color: #ef4444; margin-left: 2px; }
+.field input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: #fafafa;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  outline: none;
+}
+.field input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(2,115,102,.12);
+  background: #fff;
+}
+.field input::placeholder { color: #adb5bd; }
 
 .btn-start {
   width: 100%;
-  height: 42px;
+  height: 44px;
   background: var(--primary);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   color: #fff;
-  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background .2s;
-  margin-top: 8px;
+  transition: background .2s, transform .1s;
 }
 .btn-start:hover { background: var(--primary-hover); }
+.btn-start:active { transform: scale(.99); }
 
-.how-card { margin-top: 20px; background: var(--primary-bg) !important; border: 1px solid var(--primary-light) !important; }
-.how-card ol { margin: 0; padding-left: 20px; color: var(--text-secondary); line-height: 1.9; }
-.error-msg { color: #ff4d4f; background: #fff2f0; border: 1px solid #ffccc7; border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; font-size: 13px; }
+.info-card {
+  background: var(--primary-bg);
+  border: 1px solid var(--primary-light);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.info-card p { font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+.info-card ol {
+  padding-left: 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 2;
+}
+.info-card strong { color: var(--text-primary); }
+
+.error-msg {
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  color: #dc2626; font-size: 13px; margin-bottom: 20px;
+}
 {% endblock %}
 
 {% block content %}
 <div class="start-wrap">
   <div class="start-hero">
-    <div class="start-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="2" y="3" width="6" height="6" rx="1"/>
-        <rect x="9" y="3" width="6" height="6" rx="1"/>
-        <rect x="16" y="3" width="6" height="6" rx="1"/>
-        <rect x="2" y="12" width="6" height="6" rx="1"/>
-        <rect x="9" y="12" width="6" height="6" rx="1"/>
-        <rect x="16" y="12" width="6" height="6" rx="1"/>
-      </svg>
-    </div>
-    <h1>Prueba de ordenación de menú</h1>
+    <h1>Ordena el menú como<br>lo harías tú</h1>
     <p>
-      Te mostraremos <strong>40 ítems</strong> del menú de nuestra aplicación.<br>
-      Agrúpalos como tenga sentido para ti y ponle nombre a cada grupo.
+      Te mostraremos <strong>40 funciones</strong> de nuestra aplicación de back office.
+      Agrúpalas en categorías que tengan sentido para ti y dales un nombre.
+      No hay respuestas incorrectas.
     </p>
   </div>
 
-  <div class="ant-card ant-card-bordered" style="padding:0">
-    <div class="ant-card-body">
-      {% if error %}
-        <div class="error-msg">{{ error }}</div>
-      {% endif %}
+  <div class="form-card">
+    {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
 
-      <form method="post" action="{% url 'card_sorting:start' %}">
-        {% csrf_token %}
+    <form method="post" action="{% url 'card_sorting:start' %}">
+      {% csrf_token %}
 
-        <div class="field-group">
-          <label class="field-label">
-            Nombre <span class="field-required">*</span>
-          </label>
-          <input class="ant-input" style="height:38px;font-size:14px"
-                 type="text" name="participant_name"
-                 placeholder="Ej. María García" required autofocus>
-        </div>
+      <div class="field">
+        <label>Nombre <span class="req">*</span></label>
+        <input type="text" name="participant_name" placeholder="Ej. María García" required autofocus>
+      </div>
 
-        <div class="field-group">
-          <label class="field-label">
-            Correo electrónico <span class="field-optional">(opcional)</span>
-          </label>
-          <input class="ant-input" style="height:38px;font-size:14px"
-                 type="email" name="participant_email"
-                 placeholder="tu@correo.com">
-        </div>
+      <div class="field">
+        <label>Correo electrónico <span class="opt">(opcional)</span></label>
+        <input type="email" name="participant_email" placeholder="tu@correo.com">
+      </div>
 
-        <div class="field-group">
-          <label class="field-label">
-            Tu rol o perfil <span class="field-optional">(opcional)</span>
-          </label>
-          <input class="ant-input" style="height:38px;font-size:14px"
-                 type="text" name="participant_role"
-                 placeholder="Ej. Gerente de operaciones, Contadora…">
-        </div>
+      <div class="field">
+        <label>Tu rol o perfil <span class="opt">(opcional)</span></label>
+        <input type="text" name="participant_role" placeholder="Ej. Gerente, Contadora, Developer…">
+      </div>
 
-        <button type="submit" class="btn-start">
-          Comenzar prueba
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </button>
-      </form>
-    </div>
+      <button type="submit" class="btn-start">
+        Comenzar prueba
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </form>
   </div>
 
-  <div class="ant-card ant-card-bordered how-card">
-    <div class="ant-card-body" style="padding:16px 20px">
-      <p style="font-weight:600;margin:0 0 8px;color:var(--text-primary)">¿Cómo funciona?</p>
-      <ol>
-        <li>Verás tarjetas con nombres de funciones del sistema.</li>
-        <li>Crea grupos haciendo clic en <strong>+ Nueva categoría</strong>.</li>
-        <li>Arrastra cada tarjeta al grupo donde creas que debería estar.</li>
-        <li>Cuando termines, haz clic en <strong>Finalizar</strong>.</li>
-      </ol>
-    </div>
+  <div class="info-card">
+    <p>¿Cómo funciona?</p>
+    <ol>
+      <li>Verás tarjetas con nombres de funciones del sistema.</li>
+      <li>Crea grupos con <strong>+ Nueva categoría</strong>.</li>
+      <li>Arrastra cada tarjeta al grupo donde encaje mejor.</li>
+      <li>Haz clic en <strong>Finalizar</strong> cuando termines.</li>
+    </ol>
   </div>
 
-  <p style="text-align:center;color:var(--text-secondary);font-size:13px;margin-top:16px">
-    La prueba dura aproximadamente 10–15 minutos.
+  <p style="text-align:center;color:var(--text-secondary);font-size:12px;margin-top:16px">
+    Duración aproximada: 10–15 minutos
   </p>
 </div>
 {% endblock %}

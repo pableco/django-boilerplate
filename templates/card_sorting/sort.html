@@ -2,159 +2,183 @@
 {% block title %}Ordenar tarjetas{% endblock %}
 
 {% block extra_style %}
-/* ── Layout ── */
-.sort-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-  min-height: calc(100vh - 56px - 64px);
-}
-@media (max-width: 768px) { .sort-layout { grid-template-columns: 1fr; } }
-
 /* ── Top bar ── */
 .sort-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
 }
-.sort-topbar-left { font-size: 14px; color: var(--text-secondary); }
-.sort-topbar-left strong { color: var(--text-primary); }
-.progress-wrap { display: flex; align-items: center; gap: 12px; }
-.progress-text { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
-.progress-bar { width: 160px; height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width .3s; }
+.topbar-left { font-size: 14px; color: var(--text-secondary); }
+.topbar-left strong { color: var(--text-primary); font-weight: 700; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.progress-label { font-size: 13px; color: var(--text-secondary); }
+.progress-bar { width: 140px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width .35s; }
+
+/* ── Main layout ── */
+.sort-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 768px) { .sort-layout { grid-template-columns: 1fr; } }
 
 /* ── Unsorted panel ── */
 .unsorted-panel {
-  background: #fff;
-  border: 1px solid #f0f0f0;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 18px;
   position: sticky;
   top: 72px;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 110px);
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-sm);
 }
-.panel-title {
+.panel-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
   font-weight: 600;
-  font-size: 13px;
-  color: var(--text-secondary);
+  letter-spacing: .08em;
   text-transform: uppercase;
-  letter-spacing: .5px;
+  color: var(--text-secondary);
   margin-bottom: 4px;
 }
-.panel-hint { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
-.unsorted-drop {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 60px;
-  padding-right: 2px;
-}
+.panel-hint { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
+.unsorted-drop { flex: 1; overflow-y: auto; min-height: 50px; }
 
 /* ── Card chip ── */
 .card-chip {
-  background: #fff;
-  border: 1px solid #e8e8e8;
-  border-radius: 6px;
-  padding: 9px 12px;
-  margin-bottom: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 5px;
   cursor: grab;
   font-size: 13px;
   color: var(--text-primary);
   line-height: 1.4;
-  transition: box-shadow .15s, border-color .15s, transform .1s;
+  transition: border-color .15s, box-shadow .15s, transform .1s;
   user-select: none;
 }
-.card-chip:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(2,115,102,.12); }
-.card-chip.sortable-ghost { opacity: 0.35; }
-.card-chip.sortable-chosen { box-shadow: 0 4px 14px rgba(2,115,102,.25); border-color: var(--primary); transform: rotate(1deg); }
+.card-chip:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(2,115,102,.1);
+}
+.card-chip.sortable-ghost { opacity: .3; }
+.card-chip.sortable-chosen {
+  box-shadow: 0 6px 18px rgba(2,115,102,.22);
+  border-color: var(--primary);
+  transform: rotate(.8deg) scale(1.02);
+}
 
-/* ── Categories area ── */
-.cat-header-row {
+/* ── Categories header row ── */
+.cats-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
-.cat-header-row h2 { font-size: 16px; font-weight: 600; margin: 0; }
+.cats-header h2 { font-size: 16px; }
 
 .btn-add-cat {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 34px;
-  padding: 0 16px;
+  height: 36px;
+  padding: 0 18px;
   background: var(--primary);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: #fff;
+  font-family: 'Poppins', sans-serif;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background .2s;
 }
 .btn-add-cat:hover { background: var(--primary-hover); }
 
-.categories-area { display: flex; flex-direction: column; gap: 12px; }
+/* ── Categories GRID (columns) ── */
+.categories-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
 
 /* ── Category card ── */
 .category-col {
-  background: #fff;
-  border: 1px solid #f0f0f0;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 16px;
-  transition: border-color .15s;
+  padding: 14px;
+  transition: border-color .15s, box-shadow .15s;
+  box-shadow: var(--shadow-sm);
 }
-.category-col:focus-within { border-color: var(--primary); }
+.category-col:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(2,115,102,.08);
+}
 
-.cat-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.cat-color-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--primary); flex-shrink: 0;
+.cat-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.cat-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
 }
 .cat-name-input {
   flex: 1;
   border: none;
-  border-bottom: 1.5px solid transparent;
-  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
   background: transparent;
-  padding: 2px 4px;
   outline: none;
-  transition: border-color .2s;
+  padding: 0;
+  min-width: 0;
 }
-.cat-name-input:focus { border-bottom-color: var(--primary); }
-.cat-name-input::placeholder { color: #bbb; font-weight: 400; }
-
-.btn-del-cat {
+.cat-name-input::placeholder { color: #c0c4cc; font-weight: 400; }
+.btn-del {
   background: none; border: none; cursor: pointer;
-  color: #ccc; padding: 2px 4px; border-radius: 4px;
-  transition: color .15s, background .15s;
-  font-size: 16px; line-height: 1;
+  color: #d1d5db; font-size: 14px; padding: 0 2px;
+  line-height: 1; transition: color .15s;
+  flex-shrink: 0;
 }
-.btn-del-cat:hover { color: #ff4d4f; background: #fff1f0; }
+.btn-del:hover { color: #ef4444; }
 
 .cat-drop {
-  min-height: 44px;
-  border-radius: 6px;
-  padding: 2px;
+  min-height: 48px;
+  border-radius: var(--radius-sm);
   transition: background .15s;
 }
-.cat-drop.drag-over { background: var(--primary-light); }
+.cat-drop.drag-over { background: var(--primary-bg); }
 
 /* ── Empty state ── */
 .empty-hint {
+  grid-column: 1 / -1;
   text-align: center;
-  padding: 48px 24px;
+  padding: 56px 24px;
   color: var(--text-secondary);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
 }
-.empty-hint svg { width: 48px; height: 48px; color: #d9d9d9; margin-bottom: 12px; }
-.empty-hint p { margin: 0; font-size: 14px; }
+.empty-hint svg { width: 40px; height: 40px; opacity: .3; margin-bottom: 12px; }
+.empty-hint p { font-size: 14px; margin: 0; }
 
 /* ── Floating finish button ── */
 .btn-finish {
@@ -162,63 +186,64 @@
   bottom: 28px;
   right: 28px;
   z-index: 200;
-  height: 44px;
-  padding: 0 24px;
+  height: 46px;
+  padding: 0 28px;
   background: var(--primary);
   border: none;
-  border-radius: 22px;
+  border-radius: 23px;
   color: #fff;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 16px rgba(2,115,102,.4);
-  transition: background .2s, opacity .2s, transform .15s;
+  box-shadow: 0 4px 20px rgba(2,115,102,.45);
+  transition: background .2s, transform .15s;
 }
-.btn-finish:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); }
-.btn-finish:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.btn-finish:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); }
+.btn-finish:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
 
 /* ── Modal ── */
 .modal-overlay {
   display: none;
   position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,.45);
+  background: rgba(0,0,0,.4);
   align-items: center; justify-content: center;
 }
 .modal-overlay.open { display: flex; }
 .modal-box {
-  background: #fff;
-  border-radius: 12px;
-  padding: 40px 32px;
-  width: 420px;
-  max-width: 90vw;
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 44px 36px 36px;
+  width: 400px; max-width: 92vw;
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
 }
-.modal-emoji { font-size: 48px; margin-bottom: 16px; display: block; }
-.modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 8px; }
-.modal-box p  { color: var(--text-secondary); margin: 0 0 20px; font-size: 14px; }
+.modal-emoji { font-size: 44px; display: block; margin-bottom: 16px; }
+.modal-box h3 { font-size: 20px; margin-bottom: 8px; }
+.modal-box p  { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; }
 .modal-warning {
-  background: #fffbe6; border: 1px solid #ffe58f;
-  border-radius: 6px; padding: 10px 14px;
-  font-size: 13px; color: #7c5800;
-  margin-bottom: 20px; display: none;
+  background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-size: 13px; color: #92400e;
+  margin-bottom: 20px; display: none; text-align: left;
 }
-.modal-actions { display: flex; gap: 12px; justify-content: center; }
+.modal-actions { display: flex; gap: 10px; justify-content: center; }
 .btn-cancel {
-  height: 38px; padding: 0 20px; border-radius: 6px;
-  border: 1px solid var(--border); background: #fff;
-  font-size: 14px; cursor: pointer; color: var(--text-primary);
+  height: 40px; padding: 0 22px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: 'Lato', sans-serif; font-size: 14px;
+  cursor: pointer; color: var(--text-primary);
   transition: border-color .15s;
 }
 .btn-cancel:hover { border-color: var(--primary); color: var(--primary); }
 .btn-send {
-  height: 38px; padding: 0 24px; border-radius: 6px;
+  height: 40px; padding: 0 28px; border-radius: var(--radius-sm);
   border: none; background: var(--primary); color: #fff;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  transition: background .15s;
+  font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background .15s;
 }
 .btn-send:hover { background: var(--primary-hover); }
 .btn-send:disabled { opacity: .6; cursor: not-allowed; }
@@ -226,13 +251,13 @@
 
 {% block content %}
 <div class="sort-topbar">
-  <div class="sort-topbar-left">
+  <div class="topbar-left">
     Hola, <strong>{{ session.participant_name }}</strong>
-    — arrastra las tarjetas a las categorías que crees convenientes
+    <span style="margin-left:6px">— arrastra las tarjetas a las categorías que crees convenientes</span>
   </div>
-  <div class="progress-wrap">
-    <span class="progress-text">
-      <span id="sorted-count">0</span> / {{ session.total_cards }} tarjetas
+  <div class="topbar-right">
+    <span class="progress-label">
+      <span id="sorted-count">0</span> / {{ session.total_cards }}
     </span>
     <div class="progress-bar">
       <div class="progress-fill" id="progress-fill" style="width:0%"></div>
@@ -242,10 +267,10 @@
 
 <div class="sort-layout">
 
-  <!-- Left: unsorted -->
+  <!-- Left: unsorted pile -->
   <div>
     <div class="unsorted-panel">
-      <div class="panel-title">Sin clasificar</div>
+      <div class="panel-label">Sin clasificar</div>
       <div class="panel-hint">Arrastra las tarjetas a una categoría</div>
       <div class="unsorted-drop" id="unsorted-drop">
         {% for p in unsorted %}
@@ -257,12 +282,12 @@
     </div>
   </div>
 
-  <!-- Right: categories -->
+  <!-- Right: categories grid -->
   <div>
-    <div class="cat-header-row">
+    <div class="cats-header">
       <h2>Mis categorías</h2>
       <button class="btn-add-cat" id="btn-add-cat">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
           <path d="M12 5v14M5 12h14"/>
         </svg>
         Nueva categoría
@@ -273,33 +298,35 @@
       {% for cat in categories %}
         <div class="category-col" data-cat-id="{{ cat.id }}">
           <div class="cat-title-row">
-            <span class="cat-color-dot"></span>
-            <input type="text" class="cat-name-input" value="{{ cat.name }}" placeholder="Nombre de la categoría">
-            <button class="btn-del-cat" title="Eliminar">✕</button>
+            <span class="cat-dot"></span>
+            <input type="text" class="cat-name-input" value="{{ cat.name }}" placeholder="Nombre…">
+            <button class="btn-del" title="Eliminar">✕</button>
           </div>
-          <div class="cat-drop" data-cat-id="{{ cat.id }}"></div>
+          <div class="cat-drop"></div>
         </div>
       {% endfor %}
-    </div>
-
-    <div class="empty-hint" id="empty-hint" {% if categories %}style="display:none"{% endif %}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 5v14M5 12h14"/>
-        <rect x="3" y="3" width="18" height="18" rx="3"/>
-      </svg>
-      <p>Crea tu primera categoría con el botón de arriba</p>
+      {% if not categories %}
+        <div class="empty-hint" id="empty-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+          <p>Crea tu primera categoría con el botón de arriba</p>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
 
+<!-- Floating finish button -->
 <button class="btn-finish" id="btn-finish" disabled>
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
     <path d="M20 6L9 17l-5-5"/>
   </svg>
   Finalizar prueba
 </button>
 
-<!-- Confirmation modal -->
+<!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal-box">
     <span class="modal-emoji">✅</span>
@@ -325,102 +352,107 @@ const COMPLETE_URL = "{% url 'card_sorting:complete' session_key=session.session
 const DONE_URL     = "{% url 'card_sorting:done' session_key=session.session_key %}";
 const CSRF         = "{{ csrf_token }}";
 
-let catCounter = 0;
-let saveTimeout = null;
+let catCounter = 0, saveTimeout = null;
 
-// ── Category element factory ────────────────────────────────────────────────
-function makeCategoryEl(id, name, chipEls) {
+function makeCategoryEl(id, name, chips) {
   const col = document.createElement('div');
   col.className = 'category-col';
   if (id) col.dataset.catId = id;
   col.dataset.tempId = `tmp-${catCounter++}`;
   col.innerHTML = `
     <div class="cat-title-row">
-      <span class="cat-color-dot"></span>
-      <input type="text" class="cat-name-input" value="${name}" placeholder="Nombre de la categoría">
-      <button class="btn-del-cat" title="Eliminar">✕</button>
+      <span class="cat-dot"></span>
+      <input type="text" class="cat-name-input" value="${name}" placeholder="Nombre…">
+      <button class="btn-del" title="Eliminar">✕</button>
     </div>
     <div class="cat-drop"></div>
   `;
-  if (chipEls?.length) chipEls.forEach(c => col.querySelector('.cat-drop').appendChild(c));
+  if (chips?.length) chips.forEach(c => col.querySelector('.cat-drop').appendChild(c));
   bindCat(col);
   return col;
 }
 
 function bindCat(col) {
-  const drop   = col.querySelector('.cat-drop');
-  const input  = col.querySelector('.cat-name-input');
-  const delBtn = col.querySelector('.btn-del-cat');
+  const drop  = col.querySelector('.cat-drop');
+  const input = col.querySelector('.cat-name-input');
+  const del   = col.querySelector('.btn-del');
 
   Sortable.create(drop, {
-    group: 'cards', animation: 120,
+    group: 'cards', animation: 130,
     ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
-    onAdd: () => { scheduleSave(); updateProgress(); },
+    onAdd:    () => { scheduleSave(); updateProgress(); },
     onRemove: () => { scheduleSave(); updateProgress(); },
     onEnd: scheduleSave,
   });
 
   input.addEventListener('input', scheduleSave);
 
-  delBtn.addEventListener('click', () => {
-    const unsorted = document.getElementById('unsorted-drop');
-    [...drop.children].forEach(c => unsorted.appendChild(c));
+  del.addEventListener('click', () => {
+    [...drop.children].forEach(c => document.getElementById('unsorted-drop').appendChild(c));
     col.remove();
-    scheduleSave(); updateProgress(); checkEmpty();
+    checkEmpty(); scheduleSave(); updateProgress();
   });
 }
 
-// ── Init unsorted sortable ─────────────────────────────────────────────────
 Sortable.create(document.getElementById('unsorted-drop'), {
-  group: 'cards', animation: 120,
+  group: 'cards', animation: 130,
   ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
   onAdd:    () => { scheduleSave(); updateProgress(); },
   onRemove: () => { scheduleSave(); updateProgress(); },
 });
 
-// ── Init existing categories ───────────────────────────────────────────────
 document.querySelectorAll('#categories-area .category-col').forEach(bindCat);
 
-// ── Add category button ────────────────────────────────────────────────────
 document.getElementById('btn-add-cat').addEventListener('click', () => {
+  const hint = document.getElementById('empty-hint');
+  if (hint) hint.remove();
   const el = makeCategoryEl(null, '', []);
   document.getElementById('categories-area').appendChild(el);
   el.querySelector('.cat-name-input').focus();
-  checkEmpty(); scheduleSave();
+  scheduleSave();
 });
 
-// ── Progress ───────────────────────────────────────────────────────────────
 function updateProgress() {
   const total    = document.querySelectorAll('.card-chip').length;
   const unsorted = document.querySelectorAll('#unsorted-drop .card-chip').length;
   const sorted   = total - unsorted;
   document.getElementById('sorted-count').textContent = sorted;
-  document.getElementById('progress-fill').style.width = (total > 0 ? sorted/total*100 : 0) + '%';
-  const hasCats = document.querySelectorAll('#categories-area .category-col').length > 0;
-  document.getElementById('btn-finish').disabled = !hasCats;
+  document.getElementById('progress-fill').style.width = (total > 0 ? sorted / total * 100 : 0) + '%';
+  document.getElementById('btn-finish').disabled =
+    document.querySelectorAll('#categories-area .category-col').length === 0;
 }
 updateProgress();
 
 function checkEmpty() {
-  const hint = document.getElementById('empty-hint');
-  if (!hint) return;
-  hint.style.display = document.querySelectorAll('#categories-area .category-col').length ? 'none' : '';
+  const area = document.getElementById('categories-area');
+  if (!area.querySelector('.category-col') && !area.querySelector('.empty-hint')) {
+    const hint = document.createElement('div');
+    hint.className = 'empty-hint'; hint.id = 'empty-hint';
+    hint.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <path d="M12 8v8M8 12h8"/>
+      </svg>
+      <p>Crea tu primera categoría con el botón de arriba</p>`;
+    area.appendChild(hint);
+  }
 }
 
-// ── Serialize state ────────────────────────────────────────────────────────
 function getState() {
   const categories = [];
   document.querySelectorAll('#categories-area .category-col').forEach(col => {
-    const id    = col.dataset.catId ? parseInt(col.dataset.catId) : null;
-    const name  = col.querySelector('.cat-name-input').value.trim() || 'Sin nombre';
-    const cards = [...col.querySelectorAll('.cat-drop .card-chip')].map(c => parseInt(c.dataset.cardId));
-    categories.push({ id, name, cards });
+    categories.push({
+      id:    col.dataset.catId ? parseInt(col.dataset.catId) : null,
+      name:  col.querySelector('.cat-name-input').value.trim() || 'Sin nombre',
+      cards: [...col.querySelectorAll('.cat-drop .card-chip')].map(c => parseInt(c.dataset.cardId)),
+    });
   });
-  const unsorted = [...document.querySelectorAll('#unsorted-drop .card-chip')].map(c => parseInt(c.dataset.cardId));
-  return { categories, unsorted };
+  return {
+    categories,
+    unsorted: [...document.querySelectorAll('#unsorted-drop .card-chip')].map(c => parseInt(c.dataset.cardId)),
+  };
 }
 
-// ── Auto-save ──────────────────────────────────────────────────────────────
 function scheduleSave() {
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async () => {
@@ -430,32 +462,24 @@ function scheduleSave() {
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
         body: JSON.stringify(getState()),
       });
-    } catch(e) { console.warn('Auto-save failed', e); }
+    } catch(e) { console.warn('auto-save failed', e); }
   }, 1500);
 }
 
-// ── Modal ──────────────────────────────────────────────────────────────────
 const modal = document.getElementById('modal');
-
 document.getElementById('btn-finish').addEventListener('click', () => {
   const u = document.querySelectorAll('#unsorted-drop .card-chip').length;
   const w = document.getElementById('modal-warning');
-  if (u > 0) {
-    w.style.display = 'block';
-    document.getElementById('unsorted-remaining').textContent = u;
-  } else {
-    w.style.display = 'none';
-  }
+  w.style.display = u > 0 ? 'block' : 'none';
+  if (u > 0) document.getElementById('unsorted-remaining').textContent = u;
   modal.classList.add('open');
 });
-
 document.getElementById('btn-cancel').addEventListener('click', () => modal.classList.remove('open'));
 modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
 
 document.getElementById('btn-confirm-finish').addEventListener('click', async () => {
   const btn = document.getElementById('btn-confirm-finish');
-  btn.disabled = true;
-  btn.textContent = 'Enviando…';
+  btn.disabled = true; btn.textContent = 'Enviando…';
   try {
     const r = await fetch(COMPLETE_URL, {
       method: 'POST',

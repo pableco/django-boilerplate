@@ -5,33 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Card Sorting{% endblock %} — Prueba de Menú</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.16/antd.min.css" rel="stylesheet">
   <style>
     :root {
-      --primary:       #027366;
-      --primary-hover: #015d52;
-      --primary-light: #e6f7f5;
-      --primary-bg:    #f0faf9;
-      --text-primary:  rgba(0,0,0,.85);
-      --text-secondary:rgba(0,0,0,.45);
-      --border:        #d9d9d9;
-      --bg:            #f7f1e9;
-      --radius:        8px;
-      --shadow:        0 6px 16px rgba(0,0,0,.08);
+      --primary:        #027366;
+      --primary-hover:  #015d52;
+      --primary-light:  #e6f7f5;
+      --primary-bg:     #f0faf9;
+      --text-primary:   #1a1a2e;
+      --text-secondary: #6b7280;
+      --border:         #e5e7eb;
+      --bg:             #f7f1e9;
+      --surface:        #ffffff;
+      --radius:         10px;
+      --radius-sm:      6px;
+      --shadow-sm:      0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow:         0 4px 12px rgba(0,0,0,.07);
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+      font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 14px;
+      line-height: 1.6;
       color: var(--text-primary);
       background: var(--bg);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Ant Design primary color overrides ── */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--text-primary);
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { color: var(--primary-hover); }
+
+    /* ── Ant Design overrides ── */
     .ant-btn-primary,
     .ant-btn-primary:focus {
       background: var(--primary) !important;
@@ -42,43 +57,51 @@
       background: var(--primary-hover) !important;
       border-color: var(--primary-hover) !important;
     }
-    .ant-input:focus,
-    .ant-input-focused { border-color: var(--primary) !important; box-shadow: 0 0 0 2px rgba(2,115,102,.2) !important; }
+    .ant-input:focus, .ant-input-focused {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 2px rgba(2,115,102,.15) !important;
+    }
     .ant-input:hover { border-color: var(--primary) !important; }
-    .ant-checkbox-checked .ant-checkbox-inner { background: var(--primary) !important; border-color: var(--primary) !important; }
-    a { color: var(--primary); }
-    a:hover { color: var(--primary-hover); }
     .ant-progress-bg { background: var(--primary) !important; }
 
     /* ── Layout ── */
     .app-layout { min-height: 100vh; display: flex; flex-direction: column; }
 
     .app-header {
-      background: #fff;
-      border-bottom: 1px solid #f0f0f0;
-      padding: 0 32px;
-      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 1px 4px rgba(0,0,0,.06);
     }
 
     .app-logo {
       display: flex;
       align-items: center;
       gap: 10px;
+      font-family: 'Poppins', sans-serif;
       font-weight: 700;
-      font-size: 16px;
+      font-size: 15px;
       color: var(--primary);
-      text-decoration: none;
     }
-    .app-logo svg { width: 22px; height: 22px; }
+    .app-logo svg { width: 20px; height: 20px; }
 
-    .app-content { flex: 1; padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .app-header-right {
+      font-size: 13px;
+      color: var(--text-secondary);
+      letter-spacing: .01em;
+    }
+
+    .app-content {
+      flex: 1;
+      padding: 36px 40px;
+      width: 100%;
+    }
 
     {% block extra_style %}{% endblock %}
   </style>
@@ -88,14 +111,14 @@
   <header class="app-header">
     <a class="app-logo" href="{% url 'card_sorting:start' %}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7" rx="1"/>
-        <rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/>
-        <rect x="14" y="14" width="7" height="7" rx="1"/>
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
       </svg>
       Card Sorting
     </a>
-    <span style="color:var(--text-secondary);font-size:13px">Prueba de ordenación de menú</span>
+    <span class="app-header-right">Prueba de ordenación de menú</span>
   </header>
 
   <main class="app-content">
