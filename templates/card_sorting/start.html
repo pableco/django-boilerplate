@@ -1,74 +1,139 @@
 {% extends 'base.html' %}
 {% block title %}Inicio{% endblock %}
 
+{% block extra_style %}
+.start-wrap {
+  max-width: 520px;
+  margin: 48px auto 0;
+}
+.start-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.start-icon {
+  width: 72px;
+  height: 72px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+.start-icon svg { width: 36px; height: 36px; color: var(--primary); }
+.start-hero h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px; color: var(--text-primary); }
+.start-hero p  { color: var(--text-secondary); margin: 0; line-height: 1.7; }
+
+.ant-card { border-radius: var(--radius) !important; }
+.field-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; color: var(--text-primary); }
+.field-optional { font-weight: 400; color: var(--text-secondary); margin-left: 4px; }
+.field-required { color: #ff4d4f; margin-left: 2px; }
+.field-group { margin-bottom: 20px; }
+
+.btn-start {
+  width: 100%;
+  height: 42px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background .2s;
+  margin-top: 8px;
+}
+.btn-start:hover { background: var(--primary-hover); }
+
+.how-card { margin-top: 20px; background: var(--primary-bg) !important; border: 1px solid var(--primary-light) !important; }
+.how-card ol { margin: 0; padding-left: 20px; color: var(--text-secondary); line-height: 1.9; }
+.error-msg { color: #ff4d4f; background: #fff2f0; border: 1px solid #ffccc7; border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; font-size: 13px; }
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center mt-5">
-  <div class="col-md-6 col-lg-5">
-
-    <div class="text-center mb-4">
-      <div class="display-3 mb-2">🃏</div>
-      <h1 class="h3 fw-bold">Prueba de ordenación de menú</h1>
-      <p class="text-muted">
-        Te mostraremos entre <strong>35 y 40 ítems</strong> del menú de nuestra aplicación.
-        Tu tarea es agruparlos en categorías que tengan sentido para ti y ponerle nombre a cada grupo.
-        No hay respuestas correctas o incorrectas — tu opinión es lo que importa.
-      </p>
+<div class="start-wrap">
+  <div class="start-hero">
+    <div class="start-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="6" height="6" rx="1"/>
+        <rect x="9" y="3" width="6" height="6" rx="1"/>
+        <rect x="16" y="3" width="6" height="6" rx="1"/>
+        <rect x="2" y="12" width="6" height="6" rx="1"/>
+        <rect x="9" y="12" width="6" height="6" rx="1"/>
+        <rect x="16" y="12" width="6" height="6" rx="1"/>
+      </svg>
     </div>
-
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        {% if error %}
-          <div class="alert alert-danger">{{ error }}</div>
-        {% endif %}
-
-        <form method="post" action="{% url 'card_sorting:start' %}">
-          {% csrf_token %}
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold">
-              Tu nombre <span class="text-danger">*</span>
-            </label>
-            <input type="text" name="participant_name" class="form-control form-control-lg"
-                   placeholder="Ej. María García" required autofocus>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Correo electrónico <span class="text-muted fw-normal">(opcional)</span></label>
-            <input type="email" name="participant_email" class="form-control"
-                   placeholder="tu@correo.com">
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label fw-semibold">Tu rol o perfil <span class="text-muted fw-normal">(opcional)</span></label>
-            <input type="text" name="participant_role" class="form-control"
-                   placeholder="Ej. Gerente de operaciones, Contadora...">
-          </div>
-
-          <button type="submit" class="btn btn-brand btn-lg w-100">
-            Comenzar prueba <i class="bi bi-arrow-right ms-1"></i>
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <div class="mt-4 text-center">
-      <p class="text-muted small">
-        <i class="bi bi-clock me-1"></i>La prueba dura aproximadamente 10–15 minutos.
-      </p>
-    </div>
-
-    <div class="card border-0 bg-white mt-3">
-      <div class="card-body p-3">
-        <h6 class="fw-semibold mb-2"><i class="bi bi-info-circle me-1 text-primary"></i>¿Cómo funciona?</h6>
-        <ol class="mb-0 text-muted small">
-          <li class="mb-1">Verás tarjetas con nombres de funciones del sistema.</li>
-          <li class="mb-1">Crea grupos haciendo clic en <strong>"+ Nueva categoría"</strong>.</li>
-          <li class="mb-1">Arrastra cada tarjeta al grupo donde creas que debería estar.</li>
-          <li>Cuando termines, haz clic en <strong>"Finalizar"</strong>.</li>
-        </ol>
-      </div>
-    </div>
-
+    <h1>Prueba de ordenación de menú</h1>
+    <p>
+      Te mostraremos <strong>40 ítems</strong> del menú de nuestra aplicación.<br>
+      Agrúpalos como tenga sentido para ti y ponle nombre a cada grupo.
+    </p>
   </div>
+
+  <div class="ant-card ant-card-bordered" style="padding:0">
+    <div class="ant-card-body">
+      {% if error %}
+        <div class="error-msg">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="{% url 'card_sorting:start' %}">
+        {% csrf_token %}
+
+        <div class="field-group">
+          <label class="field-label">
+            Nombre <span class="field-required">*</span>
+          </label>
+          <input class="ant-input" style="height:38px;font-size:14px"
+                 type="text" name="participant_name"
+                 placeholder="Ej. María García" required autofocus>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">
+            Correo electrónico <span class="field-optional">(opcional)</span>
+          </label>
+          <input class="ant-input" style="height:38px;font-size:14px"
+                 type="email" name="participant_email"
+                 placeholder="tu@correo.com">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">
+            Tu rol o perfil <span class="field-optional">(opcional)</span>
+          </label>
+          <input class="ant-input" style="height:38px;font-size:14px"
+                 type="text" name="participant_role"
+                 placeholder="Ej. Gerente de operaciones, Contadora…">
+        </div>
+
+        <button type="submit" class="btn-start">
+          Comenzar prueba
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="ant-card ant-card-bordered how-card">
+    <div class="ant-card-body" style="padding:16px 20px">
+      <p style="font-weight:600;margin:0 0 8px;color:var(--text-primary)">¿Cómo funciona?</p>
+      <ol>
+        <li>Verás tarjetas con nombres de funciones del sistema.</li>
+        <li>Crea grupos haciendo clic en <strong>+ Nueva categoría</strong>.</li>
+        <li>Arrastra cada tarjeta al grupo donde creas que debería estar.</li>
+        <li>Cuando termines, haz clic en <strong>Finalizar</strong>.</li>
+      </ol>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:var(--text-secondary);font-size:13px;margin-top:16px">
+    La prueba dura aproximadamente 10–15 minutos.
+  </p>
 </div>
 {% endblock %}

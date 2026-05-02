@@ -6,36 +6,104 @@
   <title>{% block title %}Card Sorting{% endblock %} — Prueba de Menú</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.16/antd.min.css" rel="stylesheet">
   <style>
     :root {
-      --brand: #5b4fff;
-      --brand-light: #ede9ff;
-      --surface: #f8f7ff;
+      --primary:       #027366;
+      --primary-hover: #015d52;
+      --primary-light: #e6f7f5;
+      --primary-bg:    #f0faf9;
+      --text-primary:  rgba(0,0,0,.85);
+      --text-secondary:rgba(0,0,0,.45);
+      --border:        #d9d9d9;
+      --bg:            #f7f1e9;
+      --radius:        8px;
+      --shadow:        0 6px 16px rgba(0,0,0,.08);
     }
-    body { font-family: 'Inter', sans-serif; background: var(--surface); }
-    .navbar-brand { font-weight: 700; color: var(--brand) !important; }
-    .btn-brand {
-      background: var(--brand); color: #fff; border: none;
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg);
     }
-    .btn-brand:hover { background: #4a3fe0; color: #fff; }
+
+    /* ── Ant Design primary color overrides ── */
+    .ant-btn-primary,
+    .ant-btn-primary:focus {
+      background: var(--primary) !important;
+      border-color: var(--primary) !important;
+      color: #fff !important;
+    }
+    .ant-btn-primary:hover {
+      background: var(--primary-hover) !important;
+      border-color: var(--primary-hover) !important;
+    }
+    .ant-input:focus,
+    .ant-input-focused { border-color: var(--primary) !important; box-shadow: 0 0 0 2px rgba(2,115,102,.2) !important; }
+    .ant-input:hover { border-color: var(--primary) !important; }
+    .ant-checkbox-checked .ant-checkbox-inner { background: var(--primary) !important; border-color: var(--primary) !important; }
+    a { color: var(--primary); }
+    a:hover { color: var(--primary-hover); }
+    .ant-progress-bg { background: var(--primary) !important; }
+
+    /* ── Layout ── */
+    .app-layout { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .app-header {
+      background: #fff;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+
+    .app-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .app-logo svg { width: 22px; height: 22px; }
+
+    .app-content { flex: 1; padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
     {% block extra_style %}{% endblock %}
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-white border-bottom px-4">
-    <a class="navbar-brand" href="{% url 'card_sorting:start' %}">
-      <i class="bi bi-grid-3x3-gap-fill me-2"></i>Card Sorting
+<div class="app-layout">
+  <header class="app-header">
+    <a class="app-logo" href="{% url 'card_sorting:start' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Card Sorting
     </a>
-    <span class="text-muted small">Prueba de ordenación de menú</span>
-  </nav>
+    <span style="color:var(--text-secondary);font-size:13px">Prueba de ordenación de menú</span>
+  </header>
 
-  <main class="container-fluid py-4 px-4">
+  <main class="app-content">
     {% block content %}{% endblock %}
   </main>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  {% block extra_js %}{% endblock %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.16/antd.min.js"></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>
