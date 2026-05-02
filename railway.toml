@@ -1,8 +1,9 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "python manage.py collectstatic --noinput"
 
 [deploy]
-preDeployCommand = "python manage.py collectstatic --noinput && python manage.py migrate --no-input && python manage.py load_cards"
+preDeployCommand = "python manage.py migrate --no-input && python manage.py load_cards && python manage.py create_superuser_if_none"
 startCommand = "gunicorn composeexample.wsgi --bind 0.0.0.0:$PORT --log-file -"
 healthcheckPath = "/inicio/"
 healthcheckTimeout = 300
