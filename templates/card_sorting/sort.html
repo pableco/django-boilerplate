@@ -216,12 +216,19 @@
 .modal-box {
   background: var(--surface);
   border-radius: 14px;
-  padding: 44px 36px 36px;
-  width: 400px; max-width: 92vw;
+  padding: 40px 36px 36px;
+  width: 440px; max-width: 92vw;
   text-align: center;
   box-shadow: 0 20px 60px rgba(0,0,0,.18);
 }
-.modal-emoji { font-size: 44px; display: block; margin-bottom: 16px; }
+.modal-icon {
+  width: 52px; height: 52px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+.modal-icon svg { width: 26px; height: 26px; color: var(--primary); }
 .modal-box h3 { font-size: 20px; margin-bottom: 8px; }
 .modal-box p  { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; }
 .modal-warning {
@@ -230,20 +237,22 @@
   font-size: 13px; color: #92400e;
   margin-bottom: 20px; display: none; text-align: left;
 }
-.modal-actions { display: flex; gap: 10px; justify-content: center; }
+.modal-actions { display: flex; gap: 12px; justify-content: center; }
 .btn-cancel {
-  height: 40px; padding: 0 22px; border-radius: var(--radius-sm);
+  flex: 1; max-width: 180px;
+  height: 44px; padding: 0 20px; border-radius: var(--radius-sm);
   border: 1px solid var(--border); background: var(--surface);
-  font-family: 'Lato', sans-serif; font-size: 14px;
-  cursor: pointer; color: var(--text-primary);
-  transition: border-color .15s;
+  font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; color: var(--text-primary); white-space: nowrap;
+  transition: border-color .15s, color .15s;
 }
 .btn-cancel:hover { border-color: var(--primary); color: var(--primary); }
 .btn-send {
-  height: 40px; padding: 0 28px; border-radius: var(--radius-sm);
+  flex: 1; max-width: 200px;
+  height: 44px; padding: 0 20px; border-radius: var(--radius-sm);
   border: none; background: var(--primary); color: #fff;
   font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: background .15s;
+  cursor: pointer; white-space: nowrap; transition: background .15s;
 }
 .btn-send:hover { background: var(--primary-hover); }
 .btn-send:disabled { opacity: .6; cursor: not-allowed; }
@@ -329,7 +338,11 @@
 <!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal-box">
-    <span class="modal-emoji">✅</span>
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+    </div>
     <h3>¿Terminaste de ordenar?</h3>
     <p>Asegúrate de que todas las tarjetas estén en una categoría antes de enviar.</p>
     <div class="modal-warning" id="modal-warning">
