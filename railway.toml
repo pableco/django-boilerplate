@@ -1,10 +1,15 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "python manage.py collectstatic --noinput"
 
 [deploy]
+# DB-only work: this runs in a separate, ephemeral container, so anything it
+# writes to disk is NOT visible to the running app.
 preDeployCommand = "python manage.py migrate --no-input && python manage.py load_cards && python manage.py create_superuser_if_none"
-startCommand = "gunicorn composeexample.wsgi --bind 0.0.0.0:$PORT --log-file -"
+
+# collectstatic must run in the runtime container so the files actually exist
+# next to the process that serves them.
+startCommand = "python manage.py collectstatic --noinput && gunicorn composeexample.wsgi --bind 0.0.0.0:$PORT --log-file - --access-logfile - --error-logfile -"
+
 healthcheckPath = "/inicio/"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
