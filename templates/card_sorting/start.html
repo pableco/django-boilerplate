@@ -95,7 +95,7 @@
   <div class="start-hero">
     <h1>Ordena el menú como<br>lo harías tú</h1>
     <p>
-      Te mostraremos <strong>40 funciones</strong> de nuestra aplicación de back office.
+      Te mostraremos <strong>{{ card_count }} funciones</strong> de nuestra aplicación de back office.
       Agrúpalas en categorías que tengan sentido para ti y dales un nombre.
       No hay respuestas incorrectas.
     </p>
@@ -142,7 +142,7 @@
   </div>
 
   <p style="text-align:center;color:var(--text-secondary);font-size:12px;margin-top:16px">
-    Duración aproximada: 10–15 minutos
+    Duración aproximada: unos {% widthratio card_count 4 1 %} minutos
   </p>
 </div>
 {% endblock %}

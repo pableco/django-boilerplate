@@ -283,7 +283,7 @@
       <div class="panel-hint">Arrastra las tarjetas a una categoría</div>
       <div class="unsorted-drop" id="unsorted-drop">
         {% for p in unsorted %}
-          <div class="card-chip" data-card-id="{{ p.card.id }}" title="{{ p.card.description }}">
+          <div class="card-chip" data-card-id="{{ p.card.id }}">
             {{ p.card.title }}
           </div>
         {% endfor %}
@@ -311,7 +311,11 @@
             <input type="text" class="cat-name-input" value="{{ cat.name }}" placeholder="Nombre…">
             <button class="btn-del" title="Eliminar">✕</button>
           </div>
-          <div class="cat-drop"></div>
+          <div class="cat-drop">
+            {% for p in cat.placements %}
+              <div class="card-chip" data-card-id="{{ p.card.id }}">{{ p.card.title }}</div>
+            {% endfor %}
+          </div>
         </div>
       {% endfor %}
       {% if not categories %}
@@ -470,11 +474,17 @@ function scheduleSave() {
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async () => {
     try {
-      await fetch(SAVE_URL, {
+      const r = await fetch(SAVE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
         body: JSON.stringify(getState()),
       });
+      const d = await r.json();
+      // Remember server ids so the next save updates instead of recreating.
+      if (d.ok) {
+        const cols = document.querySelectorAll('#categories-area .category-col');
+        d.category_ids.forEach((id, i) => { if (cols[i]) cols[i].dataset.catId = id; });
+      }
     } catch(e) { console.warn('auto-save failed', e); }
   }, 1500);
 }

@@ -2,7 +2,6 @@
 Django settings for composeexample project.
 """
 import os
-import dj_database_url
 from pathlib import Path
 from decouple import config, Csv
 
@@ -81,24 +80,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'composeexample.wsgi.application'
 
-# Database — supports DATABASE_URL (Railway) or individual env vars (Docker)
-DATABASE_URL = config('DATABASE_URL', default=None)
+# Database: a single SQLite file. On Railway, attach a volume to the service
+# and the file lives on it (Railway sets RAILWAY_VOLUME_MOUNT_PATH); without a
+# volume the database is wiped on every deploy. SQLITE_PATH overrides both.
+_volume = os.environ.get('RAILWAY_VOLUME_MOUNT_PATH')
+SQLITE_PATH = config(
+    'SQLITE_PATH',
+    default=str(Path(_volume) / 'db.sqlite3') if _volume else str(BASE_DIR / 'db.sqlite3'),
+)
 
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': SQLITE_PATH,
+        # Wait for a concurrent writer instead of failing with "database is locked".
+        'OPTIONS': {'timeout': 20},
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('POSTGRES_NAME', 'postgres'),
-            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
-            'HOST': os.environ.get('POSTGRES_HOST', 'db'),
-            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        }
-    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

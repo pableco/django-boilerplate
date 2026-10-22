@@ -1,1 +1,1 @@
-web: gunicorn composeexample.wsgi --bind 0.0.0.0:$PORT --log-file -
+web: python manage.py migrate --no-input && python manage.py load_cards && python manage.py create_superuser_if_none && python manage.py collectstatic --noinput && gunicorn composeexample.wsgi --bind 0.0.0.0:$PORT --workers 2

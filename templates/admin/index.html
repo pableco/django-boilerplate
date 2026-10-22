@@ -1,0 +1,12 @@
+{% extends "admin/index.html" %}
+{% block content %}
+<div class="module" style="margin-bottom:20px">
+  <h2>La prueba</h2>
+  <table style="width:100%">
+    <tr><th><a href="{% url 'card_sorting:results' %}">Ver resultados</a></th><td>Agrupaciones por tarjeta, pares más agrupados y sesiones</td></tr>
+    <tr><th><a href="{% url 'admin:card_sorting_card_import' %}">Importar CSV</a></th><td>Cargar o sustituir las tarjetas</td></tr>
+    <tr><th><a href="{% url 'card_sorting:start' %}" target="_blank">Enlace para participantes</a></th><td>{{ request.scheme }}://{{ request.get_host }}{% url 'card_sorting:start' %}</td></tr>
+  </table>
+</div>
+{{ block.super }}
+{% endblock %}

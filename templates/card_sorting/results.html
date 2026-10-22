@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load card_sorting_tags %}
 {% block title %}Resultados{% endblock %}
 
 {% block extra_style %}
@@ -62,102 +61,96 @@
 .result-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f7f7f7; }
 .result-table tr:last-child td { border-bottom: none; }
 .result-table tr:hover td { background: var(--primary-bg); }
+.agree { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: var(--primary-light); color: var(--primary); }
+.agree.low { background: #fef3c7; color: #92400e; }
+.section { margin-bottom: 40px; }
+.section-help { color: var(--text-secondary); font-size: 13px; margin: -8px 0 16px; }
 {% endblock %}
 
 {% block content %}
 <div class="results-header">
   <div>
-    <h1>Resultados del Card Sorting</h1>
-    <p>{{ session_count }} sesión{{ session_count|pluralize:"es" }} completada{{ session_count|pluralize:"s" }}</p>
+    <h1>Resultados del card sorting</h1>
+    <p>{{ session_count }} sesión{{ session_count|pluralize:"es" }} completada{{ session_count|pluralize }}</p>
   </div>
-  <a href="/admin/card_sorting/" class="btn-admin">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
-      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-    </svg>
-    Admin
-  </a>
+  <a href="{% url 'admin:index' %}" class="btn-admin">Volver al admin</a>
 </div>
 
 <div class="kpi-row">
-  <div class="kpi-card">
-    <div class="kpi-value">{{ session_count }}</div>
-    <div class="kpi-label">Participantes</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-value">{{ cards|length }}</div>
-    <div class="kpi-label">Tarjetas</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-value">{{ card_stats|length }}</div>
-    <div class="kpi-label">Ítems analizados</div>
-  </div>
+  <div class="kpi-card"><div class="kpi-value">{{ session_count }}</div><div class="kpi-label">Participantes</div></div>
+  <div class="kpi-card"><div class="kpi-value">{{ card_count }}</div><div class="kpi-label">Tarjetas en la prueba</div></div>
+  <div class="kpi-card"><div class="kpi-value">{{ avg_categories|default:"—" }}</div><div class="kpi-label">Categorías por participante</div></div>
+  <div class="kpi-card"><div class="kpi-value">{% if avg_duration %}{{ avg_duration }}<span style="font-size:16px"> min</span>{% else %}—{% endif %}</div><div class="kpi-label">Duración media</div></div>
 </div>
 
 {% if session_count == 0 %}
-  <div style="background:#fff;border:1px solid #f0f0f0;border-radius:var(--radius);padding:40px;text-align:center;color:var(--text-secondary)">
-    <p style="margin:0;font-size:15px">Aún no hay sesiones completadas.<br>Comparte el enlace de inicio con los participantes.</p>
+  <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--text-secondary)">
+    Aún no hay sesiones completadas. Comparte el enlace de inicio con los participantes.
   </div>
 {% else %}
 
-<p class="section-title">Agrupaciones por ítem</p>
-<div class="card-grid">
-  {% for card in cards %}
-    {% with stat=card_stats|get_item:card.id %}
-    <div class="result-card">
-      <div class="result-card-title">
-        {{ card.title }}
-        <span>{{ stat.total_sorted }}/{{ session_count }}</span>
-      </div>
-      {% if stat.category_counts %}
-        {% for cat_name, count in stat.category_counts.items %}
-          <div class="cat-row">
-            <div class="cat-row-top">
-              <span class="cat-row-name">{{ cat_name }}</span>
-              <span class="cat-row-count">{{ count }}×</span>
-            </div>
-            <div class="bar">
-              <div class="bar-fill" style="width:{% widthratio count session_count 100 %}%"></div>
-            </div>
-          </div>
+<div class="section">
+  <h2 class="section-title">Pares más agrupados</h2>
+  <p class="section-help">Tarjetas que los participantes ponen juntas con más frecuencia. Un porcentaje alto indica que deberían vivir en la misma sección del menú.</p>
+  <div style="overflow-x:auto">
+    <table class="result-table pair-table">
+      <thead><tr><th>Tarjeta</th><th>Tarjeta</th><th>Veces juntas</th><th>% participantes</th></tr></thead>
+      <tbody>
+        {% for p in top_pairs %}
+          <tr><td>{{ p.a.title }}</td><td>{{ p.b.title }}</td><td>{{ p.count }}</td><td>{{ p.pct }}%</td></tr>
+        {% empty %}
+          <tr><td colspan="4" style="color:var(--text-secondary)">Sin datos aún</td></tr>
         {% endfor %}
-      {% else %}
-        <p class="no-data">Sin datos aún</p>
-      {% endif %}
-    </div>
-    {% endwith %}
-  {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<p class="section-title">Sesiones completadas</p>
-<div style="overflow-x:auto">
-  <table class="result-table">
-    <thead>
-      <tr>
-        <th>Participante</th>
-        <th>Rol</th>
-        <th>Categorías</th>
-        <th>Tarjetas</th>
-        <th>Duración</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for s in sessions %}
-        <tr>
-          <td>
-            <div style="font-weight:500">{{ s.participant_name }}</div>
-            {% if s.participant_email %}<div style="color:var(--text-secondary);font-size:12px">{{ s.participant_email }}</div>{% endif %}
-          </td>
-          <td style="color:var(--text-secondary)">{{ s.participant_role|default:"—" }}</td>
-          <td>{{ s.categories.count }}</td>
-          <td>{{ s.cards_sorted }} / {{ s.total_cards }}</td>
-          <td>{% if s.duration_minutes %}{{ s.duration_minutes }} min{% else %}—{% endif %}</td>
-          <td style="color:var(--text-secondary)">{{ s.completed_at|date:"d/m/Y H:i" }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="section">
+  <h2 class="section-title">Agrupaciones por tarjeta</h2>
+  <p class="section-help">Ordenadas por acuerdo: el porcentaje de participantes que eligieron el grupo más común. Abajo quedan las tarjetas ambiguas.</p>
+  <div class="card-grid">
+    {% for stat in card_stats %}
+      <div class="result-card">
+        <div class="result-card-title">
+          {{ stat.card.title }}
+          {% if stat.total_sorted %}<span class="agree{% if stat.agreement < 50 %} low{% endif %}">{{ stat.agreement }}%</span>{% endif %}
+        </div>
+        {% for name, count in stat.groups %}
+          <div class="cat-row">
+            <div class="cat-row-top">
+              <span class="cat-row-name">{{ name }}</span>
+              <span class="cat-row-count">{{ count }}×</span>
+            </div>
+            <div class="bar"><div class="bar-fill" style="width:{% widthratio count stat.total_sorted 100 %}%"></div></div>
+          </div>
+        {% empty %}
+          <p class="no-data">Nadie la ha clasificado aún</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="section">
+  <h2 class="section-title">Sesiones completadas</h2>
+  <div style="overflow-x:auto">
+    <table class="result-table">
+      <thead><tr><th>Participante</th><th>Rol</th><th>Tarjetas</th><th>Duración</th><th>Fecha</th><th></th></tr></thead>
+      <tbody>
+        {% for s in sessions %}
+          <tr>
+            <td><div style="font-weight:500">{{ s.participant_name }}</div>{% if s.participant_email %}<div style="color:var(--text-secondary);font-size:12px">{{ s.participant_email }}</div>{% endif %}</td>
+            <td style="color:var(--text-secondary)">{{ s.participant_role|default:"—" }}</td>
+            <td>{{ s.cards_sorted }} / {{ s.total_cards }}</td>
+            <td>{% if s.duration_minutes %}{{ s.duration_minutes }} min{% else %}—{% endif %}</td>
+            <td style="color:var(--text-secondary)">{{ s.completed_at|date:"d/m/Y H:i" }}</td>
+            <td><a href="{% url 'admin:card_sorting_sortingsession_change' s.pk %}">Detalle</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endif %}
 {% endblock %}

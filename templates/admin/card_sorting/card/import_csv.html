@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Inicio</a> &rsaquo;
+  <a href="{% url 'admin:card_sorting_card_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+  Importar CSV
+</div>
+{% endblock %}
+{% block content %}
+<div id="content-main">
+  <p>Sube el export de arquitectura de información. Columnas usadas: <code>Name</code>,
+     <code>Page Level</code>, <code>Main menu</code>, <code>Parent Page</code>, <code>path</code>,
+     <code>url</code>, <code>Status</code>, <code>Tráfico en 90 días</code> y <code>DEPRECATED</code>.
+     Las tarjetas se identifican por <code>Name</code>: si ya existe, se actualiza.</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset class="module aligned">
+      {% for field in form %}
+        <div class="form-row{% if field.errors %} errors{% endif %}">
+          {{ field.errors }}
+          <div>
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </fieldset>
+    <div class="submit-row"><input type="submit" class="default" value="Importar"></div>
+  </form>
+</div>
+{% endblock %}

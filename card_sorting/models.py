@@ -4,11 +4,24 @@ from django.utils import timezone
 
 
 class Card(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    order = models.IntegerField(default=0)
-    is_active = models.BooleanField(default=True)
+    title = models.CharField('nombre', max_length=200)
+    description = models.TextField('descripción', blank=True)
+    order = models.IntegerField('orden', default=0)
+    is_active = models.BooleanField(
+        'en la prueba', default=True,
+        help_text='Solo las tarjetas activas se muestran a los participantes.',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # Metadata from the information-architecture CSV. Never shown to
+    # participants (it would bias the sort); used to filter and analyse.
+    level = models.CharField('nivel', max_length=20, blank=True)
+    main_menu = models.CharField('menú actual', max_length=100, blank=True)
+    parent_page = models.CharField('página padre', max_length=300, blank=True)
+    path = models.CharField(max_length=500, blank=True)
+    url = models.URLField(max_length=500, blank=True)
+    status = models.CharField('estado', max_length=100, blank=True)
+    traffic = models.PositiveIntegerField('tráfico 90 días', default=0)
 
     class Meta:
         ordering = ['order', 'title']
